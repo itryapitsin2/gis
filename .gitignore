@@ -1,0 +1,5 @@
+/.idea/
+/oskari-logs/
+/db/data/
+/db/logs/
+.DS_Store

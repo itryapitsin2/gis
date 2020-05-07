@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  oskari-web:
+    container_name: oskari-web
+    hostname: oskari-web
+    image: itryapitsin/oskari-web
+    volumes:
+    - ./oskari-logs:/opt/oskari/logs
+    ports:
+      - 8080:8080
+    entrypoint: /opt/oskari/./wait-for-pg.sh oskari-db:5432 -- bash /opt/oskari/start.sh
+    depends_on:
+      - oskari-db
+      - oskari-redis
+
+  oskari-redis:
+    image: redis:alpine
+    container_name: oskari-redis
+    hostname: oskari-redis
+    ports:
+      - 6379:6379
+
+  oskari-db:
+    container_name: oskari-db
+    hostname: oskari-db
+    image: itryapitsin/oskari-db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=postgres
+    volumes:
+    - ./db/logs:/var/log/postgresql
+    - ./db/data:/var/lib/postgresql
+
