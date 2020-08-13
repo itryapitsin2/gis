@@ -7,12 +7,20 @@ services:
     image: itryapitsin/oskari-web
     volumes:
     - ./oskari-logs:/opt/oskari/logs
+    - ./oskari/oskari-server:/opt/oskari/oskari-server
     ports:
       - 8080:8080
-    entrypoint: /opt/oskari/./wait-for-pg.sh oskari-db:5432 -- bash /opt/oskari/start.sh
+    entrypoint: bash /opt/oskari/start.sh
     depends_on:
       - oskari-db
       - oskari-redis
+
+  cors-proxy:
+    build:
+      context: ./Docker
+      dockerfile: ./cors-proxy.dockerfile
+    ports:
+    - 80:80
 
   oskari-redis:
     image: redis:alpine
@@ -24,7 +32,10 @@ services:
   oskari-db:
     container_name: oskari-db
     hostname: oskari-db
-    image: itryapitsin/oskari-db
+#    image: itryapitsin/oskari-db
+    build:
+      context: .
+      dockerfile: ./Docker/db.dockerfile
     ports:
       - 5432:5432
     environment:
